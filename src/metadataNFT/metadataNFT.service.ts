@@ -6,9 +6,11 @@ import {
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
+import fs from 'fs'
+import csv from 'csvtojson'
 import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './metadataNFT.dto'
 import { MetadataNFT } from './metadataNFT.entity'
-import { IOpenSeaMetadata } from './metadataNFT.interface'
+import { IMetadataNFT, IOpenSeaMetadata } from './metadataNFT.interface'
 import { MetadataNFTRepository } from './metadataNFT.repository'
 
 @Injectable()
@@ -86,6 +88,83 @@ export class MetadataNFTService {
       if (error.code === '23505') {
         throw new BadRequestException('Duplicate NFT Metadata')
       }
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  private isEmptyMetadata(data: IMetadataNFT, check: string[]): boolean {
+    for (const key in data) {
+      if (check.includes(data[key]) && data[key].length <= 0) {
+        return true
+      }
+    }
+    return false
+  }
+
+  async bulkCreateMetadataNFT(
+    secret: string,
+    file: Express.Multer.File,
+  ): Promise<any> {
+    if (secret != this.configService.get('SECRET')) {
+      throw new UnauthorizedException()
+    }
+    const nameArr = file.originalname.split('.')
+    const ext = nameArr[nameArr.length - 1]
+    if (ext != 'csv') {
+      throw new BadRequestException('File must be csv')
+    }
+    const main = ['batchId', 'name', 'image', 'description']
+    const check = ['batchId', 'name', 'image']
+    const errors = []
+    const batchIds = []
+    const csvData = await csv().fromFile(file.path)
+    let metadataArr = []
+    fs.unlinkSync(file.path)
+    for (const [row, data] of csvData.entries()) {
+      const error = { row: row + 2, issues: [] }
+      if (this.isEmptyMetadata(data, check)) {
+        error.issues.push('Empty field')
+      }
+      if (batchIds.includes(data.batchId)) {
+        error.issues.push('Duplicate batchId')
+      }
+      batchIds.push(data.batchId)
+      if (error.issues.length > 0) {
+        errors.push(error)
+      }
+
+      if (errors.length > 0) {
+        if (metadataArr.length > 0) {
+          metadataArr = []
+        }
+        continue
+      }
+
+      const metadata: IMetadataNFT = {}
+      metadata.attributes = []
+      for (const key in data) {
+        if (main.includes(key)) {
+          metadata[key] = data[key]
+        } else {
+          metadata.attributes.push({ type: key, value: data[key] })
+        }
+      }
+      metadataArr.push(metadata)
+    }
+
+    if (errors.length > 0) {
+      return errors
+    }
+    try {
+      const result = await this.metadataNFTRepository.findMetadataNFTDuplicate(
+        batchIds,
+      )
+      if (result.length > 0) {
+        return { report: 'Duplicate Batch Id present in CSV' }
+      }
+      await this.metadataNFTRepository.bulkCreate(metadataArr)
+      return { report: 'success' }
+    } catch (error: any) {
       throw new InternalServerErrorException(error.message)
     }
   }
