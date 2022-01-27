@@ -7,7 +7,6 @@ export const multerStoragePath = (folderName: string) => {
     storage: diskStorage({
       destination: (_req, _file, cb) => {
         const tempPath = path.join(__dirname, '..', 'uploads', folderName)
-        console.log(tempPath)
         fs.mkdirSync(tempPath, { recursive: true })
         cb(null, tempPath)
       },

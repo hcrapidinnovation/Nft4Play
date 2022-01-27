@@ -11,22 +11,26 @@ import {
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { multerStoragePath } from 'src/shared/multer/storage.multer'
-import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './metadataNFT.dto'
-import { MetadataNFT } from './metadataNFT.entity'
-import { IOpenSeaMetadata } from './metadataNFT.interface'
-import { MetadataNFTService } from './metadatanft.service'
-@Controller('metadatanft')
-export class MetadataNFTController {
-  constructor(private readonly metadataNFTService: MetadataNFTService) {}
+import {
+  CreateMetadataNFTDto,
+  UpdateMetadataNFTDto,
+} from './medalMetadataNFT.dto'
+import { MedalMetadataNFT } from './medalMetadataNFT.entity'
+import { IOpenSeaMetadata } from './medalMetadataNFT.interface'
+import { MedalMetadataNFTService } from './medalMetadataNFT.service'
 
-  @Get('/:batchId.json')
+@Controller('medal')
+export class MedalMetadataNFTController {
+  constructor(private readonly metadataNFTService: MedalMetadataNFTService) {}
+
+  @Get('metadata/:batchId.json')
   async getOpenSeaMetadata(
     @Param('batchId', ParseIntPipe) batchId: number,
   ): Promise<IOpenSeaMetadata | unknown> {
     return this.metadataNFTService.getOpenSeaMetadata(batchId)
   }
 
-  @Get('internal/:nftId.json')
+  @Get('metadata/internal/:nftId.json')
   async getOpenSeaMetadataInternal(
     @Param('nftId', ParseIntPipe) nftId: number,
   ): Promise<IOpenSeaMetadata | unknown> {
@@ -37,7 +41,7 @@ export class MetadataNFTController {
   async createMetadataNft(
     @Param('secret') secret: string,
     @Body() createDto: CreateMetadataNFTDto,
-  ): Promise<MetadataNFT> {
+  ): Promise<MedalMetadataNFT> {
     return this.metadataNFTService.createMetadataNFT(secret, createDto)
   }
 
@@ -54,7 +58,7 @@ export class MetadataNFTController {
   async updateMetadataNft(
     @Param('secret') secret: string,
     @Body() updateDto: UpdateMetadataNFTDto,
-  ): Promise<MetadataNFT> {
+  ): Promise<MedalMetadataNFT> {
     return this.metadataNFTService.updateMetadataNft(secret, updateDto)
   }
 }

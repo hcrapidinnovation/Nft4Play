@@ -8,16 +8,19 @@ import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import fs from 'fs'
 import csv from 'csvtojson'
-import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './metadataNFT.dto'
-import { MetadataNFT } from './metadataNFT.entity'
-import { IMetadataNFT, IOpenSeaMetadata } from './metadataNFT.interface'
-import { MetadataNFTRepository } from './metadataNFT.repository'
+import {
+  CreateMetadataNFTDto,
+  UpdateMetadataNFTDto,
+} from './medalMetadataNFT.dto'
+import { MedalMetadataNFT as MetadataNFT } from './medalMetadataNFT.entity'
+import { IMetadataNFT, IOpenSeaMetadata } from './medalMetadataNFT.interface'
+import { MedalMetadataNFTRepository } from './medalMetadataNFT.repository'
 
 @Injectable()
-export class MetadataNFTService {
+export class MedalMetadataNFTService {
   constructor(
-    @InjectRepository(MetadataNFTRepository)
-    private readonly metadataNFTRepository: MetadataNFTRepository,
+    @InjectRepository(MedalMetadataNFTRepository)
+    private readonly metadataNFTRepository: MedalMetadataNFTRepository,
     private readonly configService: ConfigService,
   ) {}
 
@@ -185,7 +188,6 @@ export class MetadataNFTService {
       )
       return obj
     } catch (error: any) {
-      console.log(error)
       throw new InternalServerErrorException(error.message)
     }
   }

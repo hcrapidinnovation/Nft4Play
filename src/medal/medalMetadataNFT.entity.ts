@@ -6,10 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
-import { IAttribute } from './metadataNFT.interface'
+import { IAttribute } from './medalMetadataNFT.interface'
 
 @Entity()
-export class MetadataNFT {
+export class MedalMetadataNFT {
   @PrimaryGeneratedColumn('uuid')
   id: string
 

@@ -5,7 +5,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import config from 'ormconfig'
 import { schema } from './shared/env/env.schema'
-import { MetadataNFTModule } from './metadataNFT/metadataNFT.module'
+import { MedalMetadataNFTModule } from './medal/medalMetadataNFT.module'
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,7 +22,7 @@ import { MetadataNFTModule } from './metadataNFT/metadataNFT.module'
         limit: config.get<number>('THROTTLE_LIMIT'),
       }),
     }),
-    MetadataNFTModule,
+    MedalMetadataNFTModule,
   ],
   providers: [
     {
