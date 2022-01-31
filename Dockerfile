@@ -6,4 +6,4 @@ RUN npm install --only-production
 COPY . ./
 RUN npm run build
 COPY ./.env.production dist/
-CMD node dist/src/main.js
+CMD npm run start:prod
