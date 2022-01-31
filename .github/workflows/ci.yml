@@ -23,7 +23,7 @@ jobs:
     - run: ls
     - name: Run build
       run: |
-        sudo cp /home/ubuntu/env/nft4play.env ./.env
+        sudo cp /home/ubuntu/env/nft4play.env ./.env.production
         sudo docker stop nft4play || true
         sudo docker rm $(sudo docker ps -a -q) || true
         sudo docker rmi -f $(sudo docker images -a -q) || true
