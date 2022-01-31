@@ -28,5 +28,5 @@ jobs:
         sudo docker rm $(sudo docker ps -a -q) || true
         sudo docker rmi -f $(sudo docker images -a -q) || true
         sudo docker system prune || true
-        sudo docker build  -t nft4play .
+        sudo docker build  -t nft4play . 
         sudo docker run -d -p 4000:3000 --network=nft4play_default --name=nft4play nft4play 
