@@ -21,6 +21,9 @@ export class CardService {
     private readonly configService: ConfigService,
   ) {}
 
+  isNumeric(num: any): boolean {
+    return !isNaN(num)
+  }
   async getOpenSeaMetadataInternal(
     nftId: number,
   ): Promise<IOpenSeaMetadata | unknown> {
@@ -32,15 +35,19 @@ export class CardService {
         return {}
       }
 
-      const { name, image, description, attributes } = metadataNFT
+      const { factionNumber, name, image, description, attributes } =
+        metadataNFT
       const openSeaAttributes = attributes
         ? attributes.map((attr) => ({
             trait_type: attr.type,
-            value: attr.value,
+            value: this.isNumeric(attr.value)
+              ? parseInt(attr.value.toString())
+              : attr.value,
           }))
         : []
       const openSeaMetadata: IOpenSeaMetadata = {
         name,
+        factionNumber,
         image,
         description,
         attributes: openSeaAttributes,
@@ -105,6 +112,9 @@ export class CardService {
     secret: string,
     file: Express.Multer.File,
   ): Promise<any> {
+    if (!file) {
+      throw new BadRequestException()
+    }
     if (secret != this.configService.get('SECRET')) {
       throw new UnauthorizedException()
     }
@@ -160,7 +170,7 @@ export class CardService {
         nftIds,
       )
       if (result.length > 0) {
-        return { report: 'Duplicate Batch Id present in CSV' }
+        return { report: 'Duplicate nft Id present in CSV' }
       }
       await this.metadataNFTRepository.bulkCreate(metadataArr)
       return { report: 'success' }

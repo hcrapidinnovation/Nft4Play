@@ -65,7 +65,8 @@ export class CardMetadataNFTRepository extends Repository<CardMetadataNFT> {
       metadataNFT.attributes.forEach((obj) => {
         if (obj.type === attrUpdates.increment.type) {
           obj.value = `${
-            parseInt(attrUpdates.increment.value) + parseInt(obj.value)
+            parseInt(attrUpdates.increment.value.toString()) +
+            parseInt(obj.value.toString())
           }`
         }
       })

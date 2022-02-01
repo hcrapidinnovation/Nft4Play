@@ -1,6 +1,6 @@
 export interface IAttribute {
   type: string
-  value: string
+  value: string | number
 }
 
 export interface IMetadataNFT {
@@ -19,7 +19,7 @@ export interface IMetadataNFT {
 
 export interface IOpenSeaAttribute {
   trait_type: string
-  value: string
+  value: string | number
 }
 
 export interface IOpenSeaMetadata {
@@ -30,6 +30,7 @@ export interface IOpenSeaMetadata {
   external_url?: string
   image: string
   name: string
+  factionNumber: string
 }
 
 export interface IArrayUpdates {
