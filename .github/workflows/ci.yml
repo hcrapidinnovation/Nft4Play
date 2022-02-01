@@ -1,0 +1,32 @@
+name: Push-to-EC2 
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [closed]
+    branches:
+     - main
+jobs: 
+  ci:
+    runs-on: label-2
+    steps: 
+    - name: Checkout the code
+      uses: actions/checkout@v1 
+#     - name: Deploy to my EC2 instance 
+#       uses: easingthemes/ssh-deploy@v2.1.5
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: "54.154.219.1"
+        REMOTE_USER: "ubuntu"
+        TARGET: "/home/ubuntu/" 
+    - run: pwd
+    - run: ls
+    - name: Run build
+      run: |
+        sudo cp /home/ubuntu/env/nft4play.env ./.env.production
+        sudo docker stop nft4play || true
+        sudo docker rm $(sudo docker ps -a -q) || true
+        sudo docker rmi -f $(sudo docker images -a -q) || true
+        sudo docker system prune || true
+        sudo docker build  -t nft4play . 
+        sudo docker run -d -p 4000:3000 --network=nft4play_default --name=nft4play nft4play 
