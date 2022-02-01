@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import config from 'ormconfig'
 import { schema } from './shared/env/env.schema'
 import { MedalMetadataNFTModule } from './medal/medalMetadataNFT.module'
+import { CardModule } from './card/card.module'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MedalMetadataNFTModule } from './medal/medalMetadataNFT.module'
       }),
     }),
     MedalMetadataNFTModule,
+    CardModule,
   ],
   providers: [
     {
