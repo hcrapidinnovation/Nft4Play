@@ -7,23 +7,38 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as fs from 'fs'
-import * as csv from 'csvtojson'
+import csv from 'csvtojson'
+import { Contract } from 'web3-eth-contract'
+import web3 from 'web3'
 import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './card.dto'
 import { CardMetadataNFT } from './card.entity'
 import { IMetadataNFT, IOpenSeaMetadata } from './card.interface'
 import { CardMetadataNFTRepository } from './card.repository'
+import { cardAbi } from './card.abi'
 
 @Injectable()
 export class CardService {
+  private cardContract: Contract
+  private web3Http: web3
   constructor(
     @InjectRepository(CardMetadataNFTRepository)
     private readonly metadataNFTRepository: CardMetadataNFTRepository,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    const http = this.configService.get('PROVIDER_API_HTTP')
+    const providerHttp = new web3.providers.HttpProvider(http)
+    this.web3Http = new web3(providerHttp)
+
+    this.cardContract = new this.web3Http.eth.Contract(
+      cardAbi,
+      this.configService.get('CARD_CONTRACT_ADDRESS'),
+    )
+  }
 
   isNumeric(num: any): boolean {
     return !isNaN(num)
   }
+
   async getOpenSeaMetadataInternal(
     nftId: number,
   ): Promise<IOpenSeaMetadata | unknown> {
@@ -60,6 +75,10 @@ export class CardService {
 
   async getOpenSeaMetadata(nftId: number): Promise<IOpenSeaMetadata | unknown> {
     try {
+      const url = await this.cardContract.methods.tokenURI(nftId).call()
+      if (!url) {
+        return {}
+      }
       const openSeaMetadata = await this.getOpenSeaMetadataInternal(nftId)
       return openSeaMetadata
     } catch (error: any) {
