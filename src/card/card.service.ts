@@ -192,7 +192,7 @@ export class CardService {
       if (
         (data.factionNumber.toUpperCase() === 'LYF' ||
           data.factionNumber.toUpperCase() === 'LEGENDARY') &&
-        !(data.nftId >= 40000000 && data.nftId < 50000000)
+        !(data.nftId >= 40000000 && data.nftId < 40010000)
       ) {
         error.issues.push('Invalid nftId for Legendary Card')
       }
