@@ -138,6 +138,51 @@ export class CardService {
       if (nftIds.includes(data.nftId)) {
         error.issues.push('Duplicate nftId')
       }
+      if (
+        (data.factionNumber.toUpperCase() === 'GNF' ||
+          data.factionNumber.toUpperCase() === 'GREEN') &&
+        data.nftId >= 1 &&
+        data.nftId < 1000000
+      ) {
+        error.issues.push('Invalid nftId for Green Card')
+      }
+
+      if (
+        (data.factionNumber.toUpperCase() === 'SRF' ||
+          data.factionNumber.toUpperCase() === 'SILVER') &&
+        data.nftId >= 1000000 &&
+        data.nftId < 2000000
+      ) {
+        error.issues.push('Invalid nftId for Silver Card')
+      }
+
+      if (
+        (data.factionNumber.toUpperCase() === 'GDF' ||
+          data.factionNumber.toUpperCase() === 'GOLD') &&
+        data.nftId >= 2000000 &&
+        data.nftId < 3000000
+      ) {
+        error.issues.push('Invalid nftId for Gold Card')
+      }
+
+      if (
+        (data.factionNumber.toUpperCase() === 'VPF' ||
+          data.factionNumber.toUpperCase() === 'VIP') &&
+        data.nftId >= 3000000 &&
+        data.nftId < 4000000
+      ) {
+        error.issues.push('Invalid nftId for VIP Card')
+      }
+
+      if (
+        (data.factionNumber.toUpperCase() === 'LYF' ||
+          data.factionNumber.toUpperCase() === 'LEGENDARY') &&
+        data.nftId >= 4000000 &&
+        data.nftId < 5000000
+      ) {
+        error.issues.push('Invalid nftId for Legendary Card')
+      }
+
       nftIds.push(data.nftId)
       if (error.issues.length > 0) {
         errors.push(error)
