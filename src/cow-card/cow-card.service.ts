@@ -139,6 +139,22 @@ export class CowCardService {
       if (nftIds.includes(data.nftId)) {
         error.issues.push('Duplicate nftId')
       }
+      
+      if (
+        (data.factionNumber.toUpperCase() === 'GDF' ||
+          data.factionNumber.toUpperCase() === 'GOLD') &&
+        !(data.nftId >= 1 && data.nftId <= 10000)
+      ) {
+        error.issues.push('Invalid nftId for Gold Card')
+      }
+
+      if (
+        (data.factionNumber.toUpperCase() === 'SRF' ||
+          data.factionNumber.toUpperCase() === 'SILVER') &&
+        !(data.nftId >= 10001)
+      ) {
+        error.issues.push('Invalid nftId for Silver Card')
+      }
 
       nftIds.push(data.nftId)
       if (error.issues.length > 0) {
