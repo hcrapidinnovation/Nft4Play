@@ -6,15 +6,18 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
-import { IAttribute } from '../constants/interface/metadataNFT.interface'
+import { IAttribute } from './cow-card.interface'
 
 @Entity()
-export class MedalMetadataNFT {
+export class CowCardMetadataNFT {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
   @Column({ unique: true })
-  batchId: number
+  nftId: number
+
+  @Column()
+  factionNumber: string
 
   @Column()
   name: string

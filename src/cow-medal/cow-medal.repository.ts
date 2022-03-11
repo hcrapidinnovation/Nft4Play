@@ -1,19 +1,19 @@
 import { EntityRepository, Repository } from 'typeorm'
-import { MedalMetadataNFT } from './medalMetadataNFT.entity'
 import {
   IArrayUpdates,
   IMetadataNFT,
 } from '../constants/interface/metadataNFT.interface'
+import { CowMedalMetadataNFT } from './cow-medal.entity'
 
-@EntityRepository(MedalMetadataNFT)
-export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
-  async findMetadataNFT(match: IMetadataNFT): Promise<MedalMetadataNFT> {
+@EntityRepository(CowMedalMetadataNFT)
+export class CowMedalMetadataNFTRepository extends Repository<CowMedalMetadataNFT> {
+  async findMetadataNFT(match: IMetadataNFT): Promise<CowMedalMetadataNFT> {
     return this.findOne({ where: match })
   }
 
   async findMetadataNFTDuplicate(
     batchIds: number[],
-  ): Promise<MedalMetadataNFT[]> {
+  ): Promise<CowMedalMetadataNFT[]> {
     const query = this.createQueryBuilder('metadataNFT')
     const result = await query
       .where('metadataNFT.batchId IN (:...batchIds)', { batchIds })
@@ -23,7 +23,7 @@ export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
 
   async createMetadataNFT(
     metadataNFT: IMetadataNFT,
-  ): Promise<MedalMetadataNFT> {
+  ): Promise<CowMedalMetadataNFT> {
     const newMetadataNFT = this.create(metadataNFT)
     await this.save(newMetadataNFT)
     return newMetadataNFT
@@ -33,7 +33,7 @@ export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
     const query = this.createQueryBuilder('metadataNFT')
     const metadataNFTArr = await query
       .insert()
-      .into(MedalMetadataNFT)
+      .into(CowMedalMetadataNFT)
       .values(dataArr)
       .execute()
     return metadataNFTArr
@@ -43,7 +43,7 @@ export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
     batchId: number,
     updates: IMetadataNFT,
     attrUpdates?: IArrayUpdates,
-  ): Promise<MedalMetadataNFT> {
+  ): Promise<CowMedalMetadataNFT> {
     const metadataNFT = await this.findOne({
       where: { batchId },
     })

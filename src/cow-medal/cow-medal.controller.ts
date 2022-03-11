@@ -15,13 +15,13 @@ import {
   CreateMetadataNFTDto,
   UpdateMetadataNFTDto,
 } from '../common/commonMetadataNFT.dto'
-import { MedalMetadataNFT } from './medalMetadataNFT.entity'
+import { CowMedalMetadataNFT as MedalMetadataNFT } from './cow-medal.entity'
 import { IOpenSeaMetadata } from '../constants/interface/metadataNFT.interface'
-import { MedalMetadataNFTService } from './medalMetadataNFT.service'
+import { CowMedalService } from './cow-medal.service'
 
-@Controller('medal')
-export class MedalMetadataNFTController {
-  constructor(private readonly metadataNFTService: MedalMetadataNFTService) {}
+@Controller('cow/medal')
+export class CowMedalController {
+  constructor(private readonly metadataNFTService: CowMedalService) {}
 
   @Get('metadata/:batchId.json')
   async getOpenSeaMetadata(

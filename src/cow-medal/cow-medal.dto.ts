@@ -21,11 +21,7 @@ export class Attribute {
 export class CreateMetadataNFTDto {
   @IsNumber()
   @IsNotEmpty()
-  nftId: number
-
-  @IsString()
-  @IsNotEmpty()
-  factionNumber: string
+  batchId: number
 
   @IsString()
   @IsNotEmpty()
@@ -48,12 +44,8 @@ export class CreateMetadataNFTDto {
 
 export class UpdateMetadataNFTDto {
   @IsNumber()
-  @IsNotEmpty()
-  nftId: number
-
-  @IsString()
-  @IsNotEmpty()
-  factionNumber?: string
+  @IsOptional()
+  batchId: number
 
   @IsString()
   @IsOptional()
@@ -76,42 +68,4 @@ export class UpdateMetadataNFTDto {
   @IsArray()
   @IsOptional()
   remove?: string[]
-}
-
-export class UpdateMetadataNFTAttributesDto {
-  @IsNumber()
-  @IsOptional()
-  cardLevel?: number
-
-  @IsNumber()
-  @IsOptional()
-  goalKeeper?: number
-
-  @IsNumber()
-  @IsOptional()
-  defence?: number
-
-  @IsNumber()
-  @IsOptional()
-  midField?: number
-
-  @IsNumber()
-  @IsOptional()
-  attack?: number
-
-  @IsNumber()
-  @IsOptional()
-  stamina?: number
-
-  @IsNumber()
-  @IsOptional()
-  captaincy?: number
-
-  @IsNumber()
-  @IsOptional()
-  gamesPlayed?: number
-
-  @IsNumber()
-  @IsOptional()
-  goalsScored?: number
 }

@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { multerStoragePath } from 'src/shared/multer/storage.multer'
-import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './card.dto'
+import {
+  CreateMetadataNFTDto,
+  UpdateMetadataNFTAttributesDto,
+  UpdateMetadataNFTDto,
+} from './card.dto'
 import { CardMetadataNFT } from './card.entity'
 import { IOpenSeaMetadata } from './card.interface'
 import { CardService } from './card.service'
@@ -57,5 +61,18 @@ export class CardController {
     @Body() updateDto: UpdateMetadataNFTDto,
   ): Promise<CardMetadataNFT> {
     return this.metadataNFTService.updateMetadataNft(secret, updateDto)
+  }
+
+  @Patch('/attributes/:nftId/:secret')
+  async updateMetadataNftAttributes(
+    @Param('nftId') nftId: number,
+    @Param('secret') secret: string,
+    @Body() updateAttributeDto: UpdateMetadataNFTAttributesDto,
+  ): Promise<CardMetadataNFT> {
+    return this.metadataNFTService.updateMetadataNftAttributes(
+      nftId,
+      secret,
+      updateAttributeDto,
+    )
   }
 }
