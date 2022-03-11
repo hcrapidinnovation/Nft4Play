@@ -1,29 +1,22 @@
 import { EntityRepository, Repository } from 'typeorm'
-import { MedalMetadataNFT } from './medalMetadataNFT.entity'
-import {
-  IArrayUpdates,
-  IMetadataNFT,
-} from '../constants/interface/metadataNFT.interface'
+import { CowCardMetadataNFT as CardMetadataNFT } from './cow-card.entity'
+import { IArrayUpdates, IMetadataNFT } from './cow-card.interface'
 
-@EntityRepository(MedalMetadataNFT)
-export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
-  async findMetadataNFT(match: IMetadataNFT): Promise<MedalMetadataNFT> {
+@EntityRepository(CardMetadataNFT)
+export class CowCardMetadataNFTRepository extends Repository<CardMetadataNFT> {
+  async findMetadataNFT(match: IMetadataNFT): Promise<CardMetadataNFT> {
     return this.findOne({ where: match })
   }
 
-  async findMetadataNFTDuplicate(
-    batchIds: number[],
-  ): Promise<MedalMetadataNFT[]> {
+  async findMetadataNFTDuplicate(nftIds: number[]): Promise<CardMetadataNFT[]> {
     const query = this.createQueryBuilder('metadataNFT')
     const result = await query
-      .where('metadataNFT.batchId IN (:...batchIds)', { batchIds })
+      .where('metadataNFT.nftId IN (:...nftIds)', { nftIds })
       .getMany()
     return result
   }
 
-  async createMetadataNFT(
-    metadataNFT: IMetadataNFT,
-  ): Promise<MedalMetadataNFT> {
+  async createMetadataNFT(metadataNFT: IMetadataNFT): Promise<CardMetadataNFT> {
     const newMetadataNFT = this.create(metadataNFT)
     await this.save(newMetadataNFT)
     return newMetadataNFT
@@ -33,29 +26,23 @@ export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
     const query = this.createQueryBuilder('metadataNFT')
     const metadataNFTArr = await query
       .insert()
-      .into(MedalMetadataNFT)
+      .into(CardMetadataNFT)
       .values(dataArr)
       .execute()
     return metadataNFTArr
   }
 
   async updateMetadataNFT(
-    batchId: number,
+    nftId: number,
     updates: IMetadataNFT,
     attrUpdates?: IArrayUpdates,
-  ): Promise<MedalMetadataNFT> {
+  ): Promise<CardMetadataNFT> {
     const metadataNFT = await this.findOne({
-      where: { batchId },
+      where: { nftId },
     })
 
     if (!metadataNFT) {
       return null
-    }
-
-    if (!metadataNFT.attributes && attrUpdates.add) {
-      metadataNFT.attributes = attrUpdates.add
-    } else if (attrUpdates.add) {
-      metadataNFT.attributes = [...metadataNFT.attributes, ...attrUpdates.add]
     }
 
     if (attrUpdates.remove) {
@@ -67,6 +54,13 @@ export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
         },
       )
     }
+
+    if (!metadataNFT.attributes && attrUpdates.add) {
+      metadataNFT.attributes = attrUpdates.add
+    } else if (attrUpdates.add) {
+      metadataNFT.attributes = [...metadataNFT.attributes, ...attrUpdates.add]
+    }
+
     const keys = Object.keys(updates)
     keys.forEach((key) => {
       metadataNFT[key] = updates[key]
@@ -76,7 +70,7 @@ export class MedalMetadataNFTRepository extends Repository<MedalMetadataNFT> {
   }
 
   async deleteMetadataNFT(id: number): Promise<boolean> {
-    const result = await this.delete({ batchId: id })
+    const result = await this.delete({ nftId: id })
 
     if (result.affected === 0) {
       return false

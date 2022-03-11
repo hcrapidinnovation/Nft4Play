@@ -8,75 +8,18 @@ import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as fs from 'fs'
 import csv from 'csvtojson'
-import { Contract } from 'web3-eth-contract'
-import web3 from 'web3'
-import {
-  CreateMetadataNFTDto,
-  UpdateMetadataNFTAttributesDto,
-  UpdateMetadataNFTDto,
-} from './card.dto'
-import { CardMetadataNFT } from './card.entity'
-import { IMetadataNFT, IOpenSeaMetadata } from './card.interface'
-import { CardMetadataNFTRepository } from './card.repository'
-import { cardAbi } from './card.abi'
-import { cardupgradeAbi } from './cardupgrade.abi'
+import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './cow-card.dto'
+import { CowCardMetadataNFT as CardMetadataNFT } from './cow-card.entity'
+import { IMetadataNFT, IOpenSeaMetadata } from './cow-card.interface'
+import { CowCardMetadataNFTRepository as CardMetadataNFTRepository } from './cow-card.repository'
 
 @Injectable()
-export class CardService {
-  private cardContract: Contract
-  private cardContractWs: Contract
-  private web3Http: web3
-  private web3Ws: web3
+export class CowCardService {
   constructor(
     @InjectRepository(CardMetadataNFTRepository)
     private readonly metadataNFTRepository: CardMetadataNFTRepository,
     private readonly configService: ConfigService,
-  ) {
-    const options = {
-      timeout: 30000,
-      clientConfig: { keepalive: true, keepaliveInterval: 60000 },
-      reconnect: {
-        auto: true,
-        delay: 1000,
-        maxAttempts: 5,
-        onTimeout: false,
-      },
-    }
-
-    const ws = this.configService.get('PROVIDER_API_WS')
-    const provider = new web3.providers.WebsocketProvider(ws, options)
-    this.web3Ws = new web3(provider)
-    const http = this.configService.get('PROVIDER_API_HTTP')
-    const providerHttp = new web3.providers.HttpProvider(http)
-    this.web3Http = new web3(providerHttp)
-
-    this.cardContract = new this.web3Http.eth.Contract(
-      cardAbi,
-      this.configService.get('CARD_CONTRACT_ADDRESS'),
-    )
-
-    this.cardContractWs = new this.web3Ws.eth.Contract(
-      cardupgradeAbi,
-      this.configService.get('CARD_UPGRADE_CONTRACT_ADDRESS'),
-    )
-    this.upgradeTokenEventListner()
-  }
-
-  async upgradeTokenEventListner(): Promise<void> {
-    this.cardContractWs.events.UpgradeToken(async (error: any, event: any) => {
-      if (error) {
-        return
-      }
-      try {
-        await this.metadataNFTRepository.updateMetadataNftAttributes(
-          event.returnValues._cardId,
-          {
-            cardLevel: 1,
-          },
-        )
-      } catch (error: any) {}
-    })
-  }
+  ) {}
 
   isNumeric(num: any): boolean {
     return !isNaN(num)
@@ -118,10 +61,6 @@ export class CardService {
 
   async getOpenSeaMetadata(nftId: number): Promise<IOpenSeaMetadata | unknown> {
     try {
-      const url = await this.cardContract.methods.tokenURI(nftId).call()
-      if (!url) {
-        return {}
-      }
       const openSeaMetadata = await this.getOpenSeaMetadataInternal(nftId)
       return openSeaMetadata
     } catch (error: any) {
@@ -200,45 +139,6 @@ export class CardService {
       if (nftIds.includes(data.nftId)) {
         error.issues.push('Duplicate nftId')
       }
-      if (
-        (data.factionNumber.toUpperCase() === 'GNF' ||
-          data.factionNumber.toUpperCase() === 'GREEN') &&
-        !(data.nftId >= 1 && data.nftId < 10000000)
-      ) {
-        error.issues.push('Invalid nftId for Green Card')
-      }
-
-      if (
-        (data.factionNumber.toUpperCase() === 'SRF' ||
-          data.factionNumber.toUpperCase() === 'SILVER') &&
-        !(data.nftId >= 10000000 && data.nftId < 20000000)
-      ) {
-        error.issues.push('Invalid nftId for Silver Card')
-      }
-
-      if (
-        (data.factionNumber.toUpperCase() === 'GDF' ||
-          data.factionNumber.toUpperCase() === 'GOLD') &&
-        !(data.nftId >= 20000000 && data.nftId < 30000000)
-      ) {
-        error.issues.push('Invalid nftId for Gold Card')
-      }
-
-      if (
-        (data.factionNumber.toUpperCase() === 'VPF' ||
-          data.factionNumber.toUpperCase() === 'VIP') &&
-        !(data.nftId >= 30000000 && data.nftId < 40000000)
-      ) {
-        error.issues.push('Invalid nftId for VIP Card')
-      }
-
-      if (
-        (data.factionNumber.toUpperCase() === 'LYF' ||
-          data.factionNumber.toUpperCase() === 'LEGENDARY') &&
-        !(data.nftId >= 40000000 && data.nftId < 40010000)
-      ) {
-        error.issues.push('Invalid nftId for Legendary Card')
-      }
 
       nftIds.push(data.nftId)
       if (error.issues.length > 0) {
@@ -297,24 +197,6 @@ export class CardService {
         { add, remove },
       )
       return obj
-    } catch (error: any) {
-      throw new InternalServerErrorException(error.message)
-    }
-  }
-
-  async updateMetadataNftAttributes(
-    nftId: number,
-    secret: string,
-    updateAttributeDto: UpdateMetadataNFTAttributesDto,
-  ): Promise<CardMetadataNFT> {
-    if (secret != this.configService.get('SECRET')) {
-      throw new UnauthorizedException()
-    }
-    try {
-      return this.metadataNFTRepository.updateMetadataNftAttributes(
-        nftId,
-        updateAttributeDto,
-      )
     } catch (error: any) {
       throw new InternalServerErrorException(error.message)
     }

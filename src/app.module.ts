@@ -7,6 +7,8 @@ import config from 'ormconfig'
 import { schema } from './shared/env/env.schema'
 import { MedalMetadataNFTModule } from './medal/medalMetadataNFT.module'
 import { CardModule } from './card/card.module'
+import { CowMedalModule } from './cow-medal/cow-medal.module'
+import { CowCardModule } from './cow-card/cow-card.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { CardModule } from './card/card.module'
     }),
     MedalMetadataNFTModule,
     CardModule,
+    CowMedalModule,
+    CowCardModule,
   ],
   providers: [
     {

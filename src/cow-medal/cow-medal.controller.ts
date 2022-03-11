@@ -15,13 +15,13 @@ import {
   CreateMetadataNFTDto,
   UpdateMetadataNFTDto,
 } from '../common/commonMetadataNFT.dto'
-import { MedalMetadataNFT } from './medalMetadataNFT.entity'
+import { CowMedalMetadataNFT as MedalMetadataNFT } from './cow-medal.entity'
 import { IOpenSeaMetadata } from '../constants/interface/metadataNFT.interface'
-import { MedalMetadataNFTService } from './medalMetadataNFT.service'
+import { CowMedalService } from './cow-medal.service'
 
-@Controller('medal')
-export class MedalMetadataNFTController {
-  constructor(private readonly metadataNFTService: MedalMetadataNFTService) {}
+@Controller('cow/medal')
+export class CowMedalController {
+  constructor(private readonly metadataNFTService: CowMedalService) {}
 
   @Get('metadata/:batchId.json')
   async getOpenSeaMetadata(
@@ -30,11 +30,11 @@ export class MedalMetadataNFTController {
     return this.metadataNFTService.getOpenSeaMetadata(batchId)
   }
 
-  @Get('metadata/internal/:nftId.json')
+  @Get('metadata/internal/:batchId.json')
   async getOpenSeaMetadataInternal(
-    @Param('nftId', ParseIntPipe) nftId: number,
+    @Param('batchId', ParseIntPipe) batchId: number,
   ): Promise<IOpenSeaMetadata | unknown> {
-    return this.metadataNFTService.getOpenSeaMetadataInternal(nftId)
+    return this.metadataNFTService.getOpenSeaMetadataInternal(batchId)
   }
 
   @Post('/:secret')

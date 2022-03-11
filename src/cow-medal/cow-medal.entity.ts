@@ -9,7 +9,7 @@ import {
 import { IAttribute } from '../constants/interface/metadataNFT.interface'
 
 @Entity()
-export class MedalMetadataNFT {
+export class CowMedalMetadataNFT {
   @PrimaryGeneratedColumn('uuid')
   id: string
 

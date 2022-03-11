@@ -12,18 +12,18 @@ import {
   CreateMetadataNFTDto,
   UpdateMetadataNFTDto,
 } from '../common/commonMetadataNFT.dto'
-import { MedalMetadataNFT as MetadataNFT } from './medalMetadataNFT.entity'
+import { CowMedalMetadataNFT as MetadataNFT } from './cow-medal.entity'
 import {
   IMetadataNFT,
   IOpenSeaMetadata,
 } from '../constants/interface/metadataNFT.interface'
-import { MedalMetadataNFTRepository } from './medalMetadataNFT.repository'
+import { CowMedalMetadataNFTRepository } from './cow-medal.repository'
 
 @Injectable()
-export class MedalMetadataNFTService {
+export class CowMedalService {
   constructor(
-    @InjectRepository(MedalMetadataNFTRepository)
-    private readonly metadataNFTRepository: MedalMetadataNFTRepository,
+    @InjectRepository(CowMedalMetadataNFTRepository)
+    private readonly metadataNFTRepository: CowMedalMetadataNFTRepository,
     private readonly configService: ConfigService,
   ) {}
 
