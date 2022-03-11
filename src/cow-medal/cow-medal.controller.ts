@@ -30,11 +30,11 @@ export class CowMedalController {
     return this.metadataNFTService.getOpenSeaMetadata(batchId)
   }
 
-  @Get('metadata/internal/:nftId.json')
+  @Get('metadata/internal/:batchId.json')
   async getOpenSeaMetadataInternal(
-    @Param('nftId', ParseIntPipe) nftId: number,
+    @Param('batchId', ParseIntPipe) batchId: number,
   ): Promise<IOpenSeaMetadata | unknown> {
-    return this.metadataNFTService.getOpenSeaMetadataInternal(nftId)
+    return this.metadataNFTService.getOpenSeaMetadataInternal(batchId)
   }
 
   @Post('/:secret')
