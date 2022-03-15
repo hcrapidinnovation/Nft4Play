@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as fs from 'fs'
 import csv from 'csvtojson'
+import { Contract } from 'web3-eth-contract'
 import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './cow-card.dto'
 import { CowCardMetadataNFT as CardMetadataNFT } from './cow-card.entity'
 import { IMetadataNFT, IOpenSeaMetadata } from './cow-card.interface'
@@ -17,6 +18,7 @@ import { CowCardMetadataNFTRepository as CardMetadataNFTRepository } from './cow
 export class CowCardService {
   constructor(
     @InjectRepository(CardMetadataNFTRepository)
+    private cardContract: Contract,
     private readonly metadataNFTRepository: CardMetadataNFTRepository,
     private readonly configService: ConfigService,
   ) {}
@@ -61,6 +63,10 @@ export class CowCardService {
 
   async getOpenSeaMetadata(nftId: number): Promise<IOpenSeaMetadata | unknown> {
     try {
+      const url = await this.cardContract.methods.ownerOd(nftId);
+      if (!url) {
+        return {}
+      }
       const openSeaMetadata = await this.getOpenSeaMetadataInternal(nftId)
       return openSeaMetadata
     } catch (error: any) {
