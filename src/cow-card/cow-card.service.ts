@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as fs from 'fs'
 import csv from 'csvtojson'
+import { Contract } from 'web3-eth-contract'
 import { CreateMetadataNFTDto, UpdateMetadataNFTDto } from './cow-card.dto'
 import { CowCardMetadataNFT as CardMetadataNFT } from './cow-card.entity'
 import { IMetadataNFT, IOpenSeaMetadata } from './cow-card.interface'
@@ -17,6 +18,7 @@ import { CowCardMetadataNFTRepository as CardMetadataNFTRepository } from './cow
 export class CowCardService {
   constructor(
     @InjectRepository(CardMetadataNFTRepository)
+    private cardContract: Contract,
     private readonly metadataNFTRepository: CardMetadataNFTRepository,
     private readonly configService: ConfigService,
   ) {}
@@ -61,7 +63,12 @@ export class CowCardService {
 
   async getOpenSeaMetadata(nftId: number): Promise<IOpenSeaMetadata | unknown> {
     try {
+      const url = await this.cardContract.methods.ownerOf(nftId);
+      if (!url) {
+        return {}
+      }
       const openSeaMetadata = await this.getOpenSeaMetadataInternal(nftId)
+      console.log(openSeaMetadata)
       return openSeaMetadata
     } catch (error: any) {
       return {}
@@ -138,6 +145,22 @@ export class CowCardService {
       }
       if (nftIds.includes(data.nftId)) {
         error.issues.push('Duplicate nftId')
+      }
+      
+      if (
+        (data.factionNumber.toUpperCase() === 'GDF' ||
+          data.factionNumber.toUpperCase() === 'GOLD') &&
+        !(data.nftId >= 1 && data.nftId <= 10000)
+      ) {
+        error.issues.push('Invalid nftId for Gold Card')
+      }
+
+      if (
+        (data.factionNumber.toUpperCase() === 'SRF' ||
+          data.factionNumber.toUpperCase() === 'SILVER') &&
+        !(data.nftId >= 10001)
+      ) {
+        error.issues.push('Invalid nftId for Silver Card')
       }
 
       if (
