@@ -64,11 +64,11 @@ export class CowCardService {
   async getOpenSeaMetadata(nftId: number): Promise<IOpenSeaMetadata | unknown> {
     try {
       const url = await this.cardContract.methods.ownerOf(nftId);
-      if (!url) {
-        return {}
-      }
+      // if (!url) {
+      //   return {}
+      // }
       const openSeaMetadata = await this.getOpenSeaMetadataInternal(nftId)
-      console.log(openSeaMetadata)
+      // console.log(openSeaMetadata)
       return openSeaMetadata
     } catch (error: any) {
       return {}
