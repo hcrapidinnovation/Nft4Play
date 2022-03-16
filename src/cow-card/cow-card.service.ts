@@ -63,7 +63,7 @@ export class CowCardService {
 
   async getOpenSeaMetadata(nftId: number): Promise<IOpenSeaMetadata | unknown> {
     try {
-      const url = await this.cardContract.methods.ownerOf(nftId);
+      // const url = await this.cardContract.methods.ownerOf(nftId);
       // if (!url) {
       //   return {}
       // }
